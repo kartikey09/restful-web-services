@@ -28,7 +28,11 @@ public class UserResource {
 
 	@GetMapping(path = "/users/{id}")
 	public User retrieveUserById(@PathVariable Integer id) {
-		return service.findUserById(id);
+		User user = service.findUserById(id);
+		if (user == null) {
+			throw new UserNotFoundException("id: " + id);
+		}
+		return user;
 	}
 
 	@PostMapping("/users")
@@ -36,13 +40,11 @@ public class UserResource {
 																	// bean and is passed in the function parameter as
 																	// an object
 		User savedUser = service.save(user);
-		System.out.println(ServletUriComponentsBuilder
-				.fromCurrentRequest().toString());
-		URI location = ServletUriComponentsBuilder
-				.fromCurrentRequest()	//the whole current path as it is
-				.path("/{id}")	//appending /{id} to the current path
-				.buildAndExpand(savedUser.getId())	//adding the original id in place of "{id}" and building the path
-				.toUri();	// finally converting to uri
+		System.out.println(ServletUriComponentsBuilder.fromCurrentRequest().toString());
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest() // the whole current path as it is
+				.path("/{id}") // appending /{id} to the current path
+				.buildAndExpand(savedUser.getId()) // adding the original id in place of "{id}" and building the path
+				.toUri(); // finally converting to uri
 		return ResponseEntity.created(location).build(); // ResponseEntity class helps use to respond back with status
 															// codes
 	}

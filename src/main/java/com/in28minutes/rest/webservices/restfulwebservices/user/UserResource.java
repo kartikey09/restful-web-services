@@ -1,9 +1,12 @@
 package com.in28minutes.rest.webservices.restfulwebservices.user;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,12 +33,16 @@ public class UserResource {
 	}
 
 	@GetMapping(path = "/users/{id}")
-	public User retrieveUserById(@PathVariable Integer id) {
+	public EntityModel<User> retrieveUserById(@PathVariable Integer id) {
 		User user = service.findUserById(id);
 		if (user == null) {
 			throw new UserNotFoundException("id: " + id);
 		}
-		return user;
+		
+		EntityModel<User> entityModel = EntityModel.of(user); //here we are Wrapping the user in an entity model so that we can add HATEOAS to our https messages;
+		WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+		entityModel.add(link.withRel("all-users"));
+		return entityModel;
 	}
 
 	@DeleteMapping(path = "/users/{id}")

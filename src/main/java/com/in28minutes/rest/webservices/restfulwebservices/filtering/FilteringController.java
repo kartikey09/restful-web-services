@@ -16,7 +16,7 @@ public class FilteringController {
 	
 	private <T> MappingJacksonValue genericFiltering(T beans, SimpleBeanPropertyFilter filter){
 		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(beans);
-		FilterProvider filters = new SimpleFilterProvider().addFilter("someBeanFilter", filter);
+		FilterProvider filters =  new SimpleFilterProvider().addFilter("someBeanFilter", filter);
 		mappingJacksonValue.setFilters(filters);
 		return mappingJacksonValue;
 	}

@@ -2,8 +2,7 @@ package com.in28minutes.rest.webservices.restfulwebservices.user;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,6 +11,9 @@ import jakarta.validation.constraints.Size;
 
 @Entity(name = "user_details")
 public class User {
+	
+	protected User() {}
+	
 	@Id
 	@GeneratedValue
 	private Integer id;
@@ -22,6 +24,7 @@ public class User {
 	
 	@Past(message = "birth date should be in the past")// validation
 //	@JsonProperty("birth_date")
+//	@Column(name="birth_date")  as below the name is BirthDate the table created automatically has the col name as birth_date
 	private LocalDate birthDate;
 	
 	public User(Integer id, String name, LocalDate birthDate) {

@@ -3,6 +3,7 @@ package com.in28minutes.rest.webservices.restfulwebservices.user;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
@@ -16,49 +17,54 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.in28minutes.rest.webservices.restfulwebservices.jpa.userRepository;
+
 import jakarta.validation.Valid;
 
 @RestController
-public class UserResource {
-	UserDaoService service;
+public class UserJpaResource {
+	userRepository repository;
 
 	@Autowired
-	public UserResource(UserDaoService service) {
-		this.service = service;
+	public UserJpaResource(userRepository repository) {
+		this.repository = repository;
 	}
 
-	@GetMapping(path = "/users")
+	@GetMapping(path = "/jpa/users")
 	public List<User> retrieveAllUsers() {
-		return service.findAll();
+		return repository.findAll();
 	}
 
-	@GetMapping(path = "/users/{id}")
-	public EntityModel<User> retrieveUserById(@PathVariable Integer id) {
-		User user = service.findUserById(id);
-		if (user == null) {
-			throw new UserNotFoundException("id: " + id);
+	@GetMapping(path = "/jpa/users/{id}")
+	public EntityModel<User> retrieveUser(@PathVariable Integer id) {
+		Optional<User> user = repository.findById(id);
+		if (user.isEmpty()) {
+			throw new UserNotFoundException("User with id: " + id + " does not exist");
 		}
-		
-		EntityModel<User> entityModel = EntityModel.of(user); //here we are Wrapping the user in an entity model so that we can add HATEOAS to our https messages
+
+		EntityModel<User> entityModel = EntityModel.of(user.get()); // here we are Wrapping the user in an entity model
+																	// so that we can add HATEOAS to our https messages
+																	// the user.get() method gets use the user object
+																	// that is wrapped up in optional object
 		WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
 		entityModel.add(link.withRel("all-users"));
 		return entityModel;
 	}
 
-	@DeleteMapping(path = "/users/{id}")
+	@DeleteMapping(path = "/jpa/users/{id}")
 	public void deleteUserById(@PathVariable Integer id) {
-		User user = service.findUserById(id);
-		if (user == null) {
-			throw new UserNotFoundException("id: " + id);
+		Optional<User> user = repository.findById(id);
+		if (user.isEmpty()) {
+			throw new UserNotFoundException("User with id: " + id + " does not exist");
 		}
-		service.deleteById(id);
+		repository.deleteById(id);
 	}
 
-	@PostMapping("/users")
-	public ResponseEntity<User> addUser(@Valid @RequestBody User user) { // the user body that comes in is mapped to the User
-																	// bean and is passed in the function parameter as
-																	// an object
-		User savedUser = service.save(user);
+	@PostMapping("/jpa/users")
+	public ResponseEntity<User> addUser(@Valid @RequestBody User user) {// the user body that comes in is mapped to the
+																		// User bean and is passed in the function
+																		// parameter as an object
+		User savedUser = repository.save(user);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest() // the whole current path as it is
 				.path("/{id}") // appending /{id} to the current path
 				.buildAndExpand(savedUser.getId()) // adding the original id in place of "{id}" and building the path

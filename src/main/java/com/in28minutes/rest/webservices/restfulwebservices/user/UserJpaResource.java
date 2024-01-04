@@ -1,6 +1,8 @@
 package com.in28minutes.rest.webservices.restfulwebservices.user;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +60,15 @@ public class UserJpaResource {
 			throw new UserNotFoundException("User with id: " + id + " does not exist");
 		}
 		repository.deleteById(id);
+	}
+	
+	@GetMapping(path = "/jpa/users/{id}/posts")
+	public List<Post> retrievePostsForUser(@PathVariable Integer id) {
+		Optional<User> user = repository.findById(id);
+		if (user.isEmpty()) {
+			throw new UserNotFoundException("User with id: " + id + " does not exist");
+		}
+		return user.get().getPosts();
 	}
 
 	@PostMapping("/jpa/users")

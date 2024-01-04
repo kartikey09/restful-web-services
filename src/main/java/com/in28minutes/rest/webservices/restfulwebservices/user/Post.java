@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Post {
 	
+	protected Post(){}
+	
 	@Id
 	@GeneratedValue
 	private Integer id;

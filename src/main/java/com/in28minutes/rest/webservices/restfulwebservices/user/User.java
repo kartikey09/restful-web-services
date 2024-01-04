@@ -1,11 +1,14 @@
 package com.in28minutes.rest.webservices.restfulwebservices.user;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
@@ -26,6 +29,10 @@ public class User {
 //	@JsonProperty("birth_date")
 //	@Column(name="birth_date")  as below the name is BirthDate the table created automatically has the col name as birth_date
 	private LocalDate birthDate;
+	
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	private List<Post> posts;
 	
 	public User(Integer id, String name, LocalDate birthDate) {
 		super();

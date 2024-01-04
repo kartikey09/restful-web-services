@@ -1,3 +1,8 @@
 insert into user_details(id, birth_date, name) values (10001, current_date(), 'Rana')
 insert into user_details(id, birth_date, name) values (10002, current_date(), 'Hari')
 insert into user_details(id, birth_date, name) values (10003, current_date(), 'Satish')
+insert into post(id, description, user_id) values (101, 'Learn DevOps', 10001)
+insert into post(id, description, user_id) values (102, 'Learn AWS', 10002)
+insert into post(id, description, user_id) values (103, 'Learn Google cloud service', 10003)
+insert into post(id, description, user_id) values (104, 'Learn Azure', 10002)
+insert into post(id, description, user_id) values (105, 'Learn SpringBoot', 10001)
